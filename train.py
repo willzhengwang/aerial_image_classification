@@ -14,9 +14,9 @@ from dataloader import segDataset
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def get_args():
+def fetch_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='./Semantic segmentation dataset', help='path to your dataset')
+    parser.add_argument('--data', type=str, default='../../dataset', help='path to your dataset')
     parser.add_argument('--num_epochs', type=int, default=100, help='dnumber of epochs')
     parser.add_argument('--batch', type=int, default=4, help='batch size')
     parser.add_argument('--loss', type=str, default='focalloss', help='focalloss | iouloss | crossentropy')
@@ -44,7 +44,7 @@ def plot_losses(losses, out_fig='./loss_plots.png'):
 
 
 if __name__ == '__main__':
-    args = get_args()
+    args = fetch_args()
     N_EPOCHS = args.num_epochs
     BACH_SIZE = args.batch
 
@@ -122,16 +122,18 @@ if __name__ == '__main__':
             val_loss_list.append(val_loss.cpu().detach().numpy())
             val_acc_list.append(acc(y,pred_mask).numpy())
 
-        print(' epoch {} - loss : {:.5f} - acc : {:.2f} - val loss : {:.5f} - val acc : {:.2f}'.format(epoch + 1,
-                                                                                                        np.mean(loss_list),
-                                                                                                        np.mean(acc_list),
-                                                                                                        np.mean(val_loss_list),
-                                                                                                        np.mean(val_acc_list)))
+        print(' epoch {} - loss : {:.5f} - acc : {:.2f} - val loss : {:.5f} - val acc : {:.2f}'.format(
+            epoch + 1,
+            np.mean(loss_list),
+            np.mean(acc_list),
+            np.mean(val_loss_list),
+            np.mean(val_acc_list)))
+
         losses.append([epoch, np.mean(loss_list), np.mean(val_loss_list)])
 
         compare_loss = np.mean(val_loss_list)
         is_best = compare_loss < min_loss
-        if is_best == True:
+        if is_best:
             scheduler_counter = 0
             min_loss = min(compare_loss, min_loss)
             torch.save(model.state_dict(), './saved_models/unet_epoch_{}_{:.5f}.pt'.format(epoch,np.mean(val_loss_list)))

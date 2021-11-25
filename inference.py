@@ -97,7 +97,7 @@ def predict_img(net,
 
 def fetch_args():
     parser = argparse.ArgumentParser(description="Label each pixel of input images with a corresponding class")
-    parser.add_argument('--model', '-m', default='MODEL.pth', metavar='FILE',
+    parser.add_argument('--model', '-m', default='../../models/MODEL.pth', metavar='FILE',
                         help='Specify the file in which the model is stored')
     parser.add_argument('--input', '-i', metavar='INPUT', nargs='+', help='Filenames of input images', required=True)
     parser.add_argument('--output', '-o', metavar='INPUT', nargs='+', help='Filenames of output images')
