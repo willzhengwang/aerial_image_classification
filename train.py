@@ -10,13 +10,13 @@ import torchvision.transforms as transforms
 
 from losses import FocalLoss, mIoULoss
 from model import UNet
-from dataloader import segDataset
+from dataloader import AerialDataset
 
 
 def fetch_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default='../dataset', help='path to your dataset')
-    parser.add_argument('--out_dir', type=str, default='../models', help='path to your output directory')
+    parser.add_argument('--data', type=str, default='./dataset', help='path to your dataset')
+    parser.add_argument('--out_dir', type=str, default='./saved_models', help='path to your output directory')
     parser.add_argument('--num_epochs', type=int, default=10, help='number of epochs')
     parser.add_argument('--batch', type=int, default=2, help='batch size')
     parser.add_argument('--loss', type=str, default='focalloss', help='focalloss | iouloss | crossentropy')
@@ -59,10 +59,10 @@ if __name__ == '__main__':
     args = fetch_args()
 
     color_shift = transforms.ColorJitter(.1, .1, .1, .1)
-    blurriness = transforms.GaussianBlur(3, sigma=(0.1, 2.0))
-    dataset = segDataset(args.data,
-                         training=True,
-                         transform=transforms.Compose([color_shift, blurriness]))
+    # blurriness = transforms.GaussianBlur(3, sigma=(0.1, 2.0))
+    dataset = AerialDataset(args.data,
+                         train=True,
+                         transform=transforms.Compose([color_shift]))  #, blurriness]))
 
     print('Number of images : ' + str(len(dataset)))
 

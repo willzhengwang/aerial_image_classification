@@ -38,7 +38,8 @@ class AerialDataset(torch.utils.data.Dataset):
         cls_mask = cls_mask[:, :, 0]
         image = cv2.resize(image, (512,512))/255.0
         cls_mask = cv2.resize(cls_mask, (512,512)) 
-        image = np.moveaxis(image, -1, 0)
+        image = np.moveaxis(image, -1, 0).astype(np.float32)
+        
 
         if self.train:
             if self.transform:
@@ -47,7 +48,7 @@ class AerialDataset(torch.utils.data.Dataset):
               image = self.transform(image)
               cls_mask = self.transform(cls_mask)
         
-        return torch.tensor(image).float(), torch.tensor(cls_mask, dtype=torch.int64)
+        return torch.tensor(image).float(), torch.tensor(cls_mask, dtype=torch.int16)
 
     def __len__(self):
         return len(self.img_files)

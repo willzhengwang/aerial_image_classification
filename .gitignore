@@ -138,4 +138,4 @@ dmypy.json
 test.py
 test.ipynb
 lightning_logs/
-aerial_segmentation_dataset/
+dataset/
