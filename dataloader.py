@@ -48,7 +48,7 @@ class AerialDataset(torch.utils.data.Dataset):
               image = self.transform(image)
               cls_mask = self.transform(cls_mask)
         
-        return torch.tensor(image).float(), torch.tensor(cls_mask, dtype=torch.int16)
+        return torch.tensor(image).float(), torch.tensor(cls_mask, dtype=torch.int64)
 
     def __len__(self):
         return len(self.img_files)

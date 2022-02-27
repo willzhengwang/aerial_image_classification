@@ -60,9 +60,8 @@ if __name__ == '__main__':
 
     color_shift = transforms.ColorJitter(.1, .1, .1, .1)
     # blurriness = transforms.GaussianBlur(3, sigma=(0.1, 2.0))
-    dataset = AerialDataset(args.data,
-                         train=True,
-                         transform=transforms.Compose([color_shift]))  #, blurriness]))
+    dataset = AerialDataset(args.data, train=True)
+                         # transform=transforms.Compose([color_shift]))  #, blurriness]))
 
     print('Number of images : ' + str(len(dataset)))
 
@@ -79,13 +78,13 @@ if __name__ == '__main__':
     if args.loss == 'focalloss':
         criterion = FocalLoss(gamma=3.0/4).to(device)
     elif args.loss == 'iouloss':
-        criterion = mIoULoss(n_classes=6).to(device)
+        criterion = mIoULoss(num_classes=6).to(device)
     elif args.loss == 'crossentropy':
         criterion = nn.CrossEntropyLoss().to(device)
     else:
         print('Loss function not found!')
 
-    model = UNet(n_channels=3, n_classes=6, bilinear=True).to(device)
+    model = UNet(num_classes=6, input_channels=3, bilinear=True).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.5)
     min_loss = torch.tensor(float('inf'))

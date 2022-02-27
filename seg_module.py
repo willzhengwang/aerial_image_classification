@@ -1,7 +1,5 @@
 import os
 import pytorch_lightning as pl
-# import seaborn as sns
-# import tabulate
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -12,8 +10,8 @@ import torchvision
 from PIL import Image
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from torchvision import transforms
-
-from model import UNet
+from pl_bolts.models.vision.unet import UNet
+# from model import UNet
 
 
 model_dict = {"UNet": UNet}
@@ -69,7 +67,7 @@ class SegModule(pl.LightningModule):
         imgs, labels = batch
         preds = self.model(imgs)
         loss = self.loss_module(preds, labels)
-        acc = (preds.argmax(dim=-1) == labels).float().mean()
+        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
 
         # Logs the accuracy per epoch to tensorboard (weighted average over batches)
         self.log("train_acc", acc, on_step=False, on_epoch=True)
@@ -78,15 +76,15 @@ class SegModule(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         imgs, labels = batch
-        preds = self.model(imgs).argmax(dim=-1)
-        acc = (labels == preds).float().mean()
+        preds =self.model(imgs)
+        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
         # By default logs it per epoch (weighted average over batches)
         self.log("val_acc", acc)
 
     def test_step(self, batch, batch_idx):
         imgs, labels = batch
-        preds = self.model(imgs).argmax(dim=-1)
-        acc = (labels == preds).float().mean()
+        preds = self.model(imgs)
+        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
         # By default logs it per epoch (weighted average over batches), and returns it afterwards
         self.log("test_acc", acc)
 
@@ -100,7 +98,7 @@ def create_model(model_name, model_hparams):
 
 
 def train_model(model_name, train_loader, val_loader, test_loader=None, work_dir='saved_models', save_name=None, 
-                device="cuda:0", **kwargs):
+                device="cuda:0", max_epochs=100, **kwargs):
     """
     Inputs:
         str work_dir: path to save models and checkpoints
@@ -116,7 +114,7 @@ def train_model(model_name, train_loader, val_loader, test_loader=None, work_dir
         # We run on a single GPU (if possible)
         gpus=1 if str(device) == "cuda:0" else 0,
         # How many epochs to train for if no patience is set
-        max_epochs=20,
+        max_epochs=max_epochs,
         callbacks=[
             ModelCheckpoint(
                 save_weights_only=True, mode="max", monitor="val_acc"
