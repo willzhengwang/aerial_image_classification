@@ -27,6 +27,7 @@ share/python-wheels/
 *.egg
 .idea/
 MANIFEST
+.vscode/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -131,3 +132,11 @@ dmypy.json
 
 # output folders
 ./models
+
+
+# temporary test files
+test.py
+test.ipynb
+lightning_logs/
+dataset/
+saved_models/
