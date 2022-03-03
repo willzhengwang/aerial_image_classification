@@ -3,13 +3,8 @@ import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.utils.data as data
-import torchvision
 
-
-from PIL import Image
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-from torchvision import transforms
 from pl_bolts.models.vision.unet import UNet
 # from model import UNet
 
@@ -32,7 +27,7 @@ class SegModule(pl.LightningModule):
             optimizer_name - Name of the optimizer to use. Currently supported: Adam, SGD
             optimizer_hparams - Hyperparameters for the optimizer, as dictionary. This includes learning rate, weight decay, etc.
         """
-        #TODO: add loss_module argument
+        # TODO: add a loss_module argument
         super().__init__()
         # Exports the hyperparameters to a YAML file, and create "self.hparams" namespace
         self.save_hyperparameters()
@@ -67,7 +62,7 @@ class SegModule(pl.LightningModule):
         imgs, labels = batch
         preds = self.model(imgs)
         loss = self.loss_module(preds, labels)
-        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
+        acc = (labels == torch.argmax(preds, axis=1)).sum().item() / torch.numel(labels)
 
         # Logs the accuracy per epoch to tensorboard (weighted average over batches)
         self.log("train_acc", acc, on_step=False, on_epoch=True)
@@ -77,14 +72,14 @@ class SegModule(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         imgs, labels = batch
         preds =self.model(imgs)
-        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
+        acc = (labels == torch.argmax(preds, axis=1)).sum().item() / torch.numel(labels)
         # By default logs it per epoch (weighted average over batches)
         self.log("val_acc", acc)
 
     def test_step(self, batch, batch_idx):
         imgs, labels = batch
         preds = self.model(imgs)
-        acc = (labels == torch.argmax(preds, axis=1)).sum() / torch.numel(labels)
+        acc = (labels == torch.argmax(preds, axis=1)).sum().item() / torch.numel(labels)
         # By default logs it per epoch (weighted average over batches), and returns it afterwards
         self.log("test_acc", acc)
 
@@ -96,9 +91,8 @@ def create_model(model_name, model_hparams):
         assert False, f'Unknown model name "{model_name}". Available models are: {str(model_dict.keys())}'
 
 
-
 def train_model(model_name, train_loader, val_loader, test_loader=None, work_dir='saved_models', save_name=None, 
-                device="cuda:0", max_epochs=100, **kwargs):
+                gpus=0, max_epochs=100, **kwargs):
     """
     Inputs:
         str work_dir: path to save models and checkpoints
@@ -112,7 +106,7 @@ def train_model(model_name, train_loader, val_loader, test_loader=None, work_dir
     trainer = pl.Trainer(
         default_root_dir=os.path.join(work_dir, save_name),  # Where to save models
         # We run on a single GPU (if possible)
-        gpus=1 if str(device) == "cuda:0" else 0,
+        gpus=gpus,
         # How many epochs to train for if no patience is set
         max_epochs=max_epochs,
         callbacks=[
