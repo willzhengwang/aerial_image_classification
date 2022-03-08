@@ -65,7 +65,7 @@ class SegModule(pl.LightningModule):
         acc = (labels == torch.argmax(preds, axis=1)).sum().item() / torch.numel(labels)
 
         # Logs the accuracy per epoch to tensorboard (weighted average over batches)
-        self.log("train_acc", acc, on_step=False, on_epoch=True)
+        self.log("train_acc", acc, on_step=True, on_epoch=True)
         self.log("train_loss", loss)
         return loss  # Return tensor to call ".backward" on
 
@@ -74,7 +74,7 @@ class SegModule(pl.LightningModule):
         preds =self.model(imgs)
         acc = (labels == torch.argmax(preds, axis=1)).sum().item() / torch.numel(labels)
         # By default logs it per epoch (weighted average over batches)
-        self.log("val_acc", acc)
+        self.log("val_acc", acc, on_epoch=True)
 
     def test_step(self, batch, batch_idx):
         imgs, labels = batch
@@ -116,6 +116,7 @@ def train_model(model_name, train_loader, val_loader, test_loader=None, work_dir
             LearningRateMonitor("epoch"),
         ],  # Log learning rate every epoch
         progress_bar_refresh_rate=1,
+        log_every_n_steps=1
     )  # In case your notebook crashes due to the progress bar, consider increasing the refresh rate
     trainer.logger._log_graph = True  # If True, we plot the computation graph in tensorboard
     trainer.logger._default_hp_metric = None  # Optional logging argument that we don't need

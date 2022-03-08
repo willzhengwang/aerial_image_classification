@@ -2,6 +2,7 @@
 import torch
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
+from tensorboard import program
 
 from dataloader import AerialDataset, NAME_CLASSES
 from seg_module import train_model
@@ -36,4 +37,9 @@ if __name__ == '__main__':
         optimizer_hparams={"lr": 1e-3})
 
     print("unet_model", unet_results)
-    print('Testing is done!')
+
+    # tb = program.TensorBoard()
+    # tb.configure(argv=[None, '--logdir', 'saved_models/UNet/lightning_logs'])
+    # url = tb.launch()
+    # print(f"Tensorflow listening on {url}")
+    # print('Testing is done!')
