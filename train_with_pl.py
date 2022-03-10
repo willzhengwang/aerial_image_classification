@@ -30,7 +30,7 @@ if __name__ == '__main__':
         "UNet",
         train_loader,
         val_loader,
-        gpus=len(available_gpus),
+        gpus=len(available_gpus) - 2,
         max_epochs=150,
         model_hparams={"num_classes": len(NAME_CLASSES), "input_channels": 3},
         loss="focalloss",  # crossentropy
