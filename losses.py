@@ -3,8 +3,15 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+
 class FocalLoss(nn.Module):
-    def __init__(self, gamma=0, alpha=None, size_average=True):
+    def __init__(self, gamma=2.0, alpha=0.25, size_average=True):
+        """
+        Focal loss emphasizes samples that are difficult to classify.
+        @param gamma: 0 - equals CrossEntropyLoss; gamma=2.0 recommend
+        @param alpha: default to 0.25.
+        @param size_average:
+        """
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha

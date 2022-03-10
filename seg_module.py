@@ -6,6 +6,8 @@ import torch.optim as optim
 
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pl_bolts.models.vision.unet import UNet
+from losses import FocalLoss, mIoULoss
+
 # from model import UNet
 
 
@@ -19,22 +21,25 @@ class SegModule(pl.LightningModule):
     Args:
         pl (_type_): _description_
     """
-    def __init__(self, model_name, model_hparams, optimizer_name, optimizer_hparams):
+    def __init__(self, model_name, model_hparams, optimizer_name, loss, optimizer_hparams):
         """
         Inputs:
             model_name - Name of the model/CNN to run. Used for creating the model (see function below)
             model_hparams - Hyperparameters for the model, as dictionary.
             optimizer_name - Name of the optimizer to use. Currently supported: Adam, SGD
+            loss - Loss criterion
             optimizer_hparams - Hyperparameters for the optimizer, as dictionary. This includes learning rate, weight decay, etc.
         """
-        # TODO: add a loss_module argument
         super().__init__()
         # Exports the hyperparameters to a YAML file, and create "self.hparams" namespace
         self.save_hyperparameters()
         # Create model
         self.model = create_model(model_name, model_hparams)
         # Create loss module
-        self.loss_module = nn.CrossEntropyLoss()
+        if loss == 'crossentropy':
+            self.loss_module = nn.CrossEntropyLoss()
+        elif loss == 'focalloss':
+            self.loss_module = FocalLoss()
         # Example input for visualizing the graph in Tensorboard
         self.example_input_array = torch.zeros((1, 3, 32, 32), dtype=torch.float32)
 
