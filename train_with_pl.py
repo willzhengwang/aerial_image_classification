@@ -31,16 +31,16 @@ if __name__ == '__main__':
         train_loader,
         val_loader,
         gpus=len(available_gpus),
-        max_epochs=100,
+        max_epochs=150,
         model_hparams={"num_classes": len(NAME_CLASSES), "input_channels": 3},
-        loss="focalloss",
+        loss="focalloss",  # crossentropy
         optimizer_name="Adam",
         optimizer_hparams={"lr": 1e-3})
 
     print("unet_model", unet_results)
 
-    # tb = program.TensorBoard()
-    # tb.configure(argv=[None, '--logdir', 'saved_models/UNet/lightning_logs'])
-    # url = tb.launch()
-    # print(f"Tensorflow listening on {url}")
-    # print('Testing is done!')
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, '--logdir', 'saved_models/UNet/lightning_logs'])
+    url = tb.launch()
+    print(f"Tensorflow listening on {url}")
+    print('Testing is done!')

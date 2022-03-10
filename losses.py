@@ -5,7 +5,7 @@ from torch.autograd import Variable
 
 
 class FocalLoss(nn.Module):
-    def __init__(self, gamma=2.0, alpha=0.25, size_average=True):
+    def __init__(self, gamma=2.0, alpha=None, size_average=True):
         """
         Focal loss emphasizes samples that are difficult to classify.
         @param gamma: 0 - equals CrossEntropyLoss; gamma=2.0 recommend
