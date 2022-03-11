@@ -20,27 +20,40 @@ if __name__ == '__main__':
     # axarr[1].imshow(label)
     # plt.show()
 
+    # model networks - model parameters
+    model = "AttU_Net"
+    if model == 'UNet':
+        batch_size = 4
+        model_params = {"num_classes": len(NAME_CLASSES), "input_channels": 3}
+    elif model in "R2U_Net":
+        batch_size = 1  # batch size - 2 out of memory
+        model_params = {"output_ch": len(NAME_CLASSES)}
+    elif model == "AttU_Net":
+        batch_size = 2
+        model_params = {"output_ch": len(NAME_CLASSES)}
+
     # We define a set of data loaders that we can use for various purposes later.
-    train_loader = DataLoader(train_set, batch_size=4, shuffle=True, drop_last=True, pin_memory=True, num_workers=4)
-    val_loader = DataLoader(val_set, batch_size=4, shuffle=False, drop_last=False, num_workers=4)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=True,
+                              pin_memory=True, num_workers=batch_size)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False,
+                            drop_last=False, num_workers=batch_size)
     available_gpus = [torch.cuda.device(i) for i in range(torch.cuda.device_count())]
     print(f"Number of GPUs: {len(available_gpus)}")
 
     unet_model, unet_results = train_model(
-        "UNet",
+        model,
         train_loader,
         val_loader,
-        gpus=len(available_gpus) - 2,
-        max_epochs=150,
-        model_hparams={"num_classes": len(NAME_CLASSES), "input_channels": 3},
-        loss="focalloss",  # crossentropy
+        gpus=max(len(available_gpus) - 1, 0),
+        max_epochs=80,
+        model_hparams=model_params,
+        loss="crossentropy",  # "focalloss"
         optimizer_name="Adam",
         optimizer_hparams={"lr": 1e-3})
+    print(model, unet_results)
 
-    print("unet_model", unet_results)
-
-    tb = program.TensorBoard()
-    tb.configure(argv=[None, '--logdir', 'saved_models/UNet/lightning_logs'])
-    url = tb.launch()
-    print(f"Tensorflow listening on {url}")
-    print('Testing is done!')
+    # tb = program.TensorBoard()
+    # tb.configure(argv=[None, '--logdir', 'saved_models/{}/lightning_logs'.format(model)])
+    # url = tb.launch()
+    # print(f"Tensorflow listening on {url}")
+    # print('Testing is done!')

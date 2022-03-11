@@ -7,11 +7,15 @@ import torch.optim as optim
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from pl_bolts.models.vision.unet import UNet
 from losses import FocalLoss, mIoULoss
+from network import R2U_Net,AttU_Net,R2AttU_Net
 
 # from model import UNet
 
 
-model_dict = {"UNet": UNet}
+model_dict = {"UNet": UNet,
+              "R2U_Net": R2U_Net,
+              "AttU_Net": AttU_Net,
+              "R2AttU_Net": R2AttU_Net}
 
 
 class SegModule(pl.LightningModule):
