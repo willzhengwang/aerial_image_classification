@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # plt.show()
 
     # model networks - model parameters
-    model = "AttU_Net"
+    model = "R2AttU_Net"
     if model == 'UNet':
         batch_size = 4
         model_params = {"num_classes": len(NAME_CLASSES), "input_channels": 3}
@@ -31,6 +31,10 @@ if __name__ == '__main__':
     elif model == "AttU_Net":
         batch_size = 2
         model_params = {"output_ch": len(NAME_CLASSES)}
+    elif model == "R2AttU_Net":
+        batch_size = 1
+        model_params = {"output_ch": len(NAME_CLASSES)}
+    # Notes: with the same number of epochs, UNet and AttU_Net have much better performance than R2U_Net and R2AttU_Net.
 
     # We define a set of data loaders that we can use for various purposes later.
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, drop_last=True,
@@ -52,8 +56,8 @@ if __name__ == '__main__':
         optimizer_hparams={"lr": 1e-3})
     print(model, unet_results)
 
-    # tb = program.TensorBoard()
-    # tb.configure(argv=[None, '--logdir', 'saved_models/{}/lightning_logs'.format(model)])
-    # url = tb.launch()
-    # print(f"Tensorflow listening on {url}")
-    # print('Testing is done!')
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, '--logdir', 'saved_models/{}/lightning_logs'.format(model)])
+    url = tb.launch()
+    print(f"Tensorflow listening on {url}")
+    print('Testing is done!')
