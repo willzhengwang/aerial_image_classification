@@ -130,9 +130,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# output folders
-./models
-
 
 # temporary test files
 test.py
@@ -140,3 +137,23 @@ test.ipynb
 lightning_logs/
 dataset/
 saved_models/
+
+
+### VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+**/.vscode
+
+# JetBrains
+.idea/
+
+# Lightning-Hydra-Template
+configs/local/default.yaml
+data/
+logs/
+wandb/
+.autoenv
