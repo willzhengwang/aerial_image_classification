@@ -133,10 +133,6 @@ dmypy.json
 # output folders
 ./models
 
-
 # temporary test files
-test.py
-test.ipynb
-lightning_logs/
-dataset/
-saved_models/
+data/
+logs/
