@@ -12,8 +12,7 @@ log = utils.get_logger(__name__)
 
 
 def test(config: DictConfig) -> None:
-    """Contains minimal example of the testing pipeline.
-    Evaluates given checkpoint on a testset.
+    """Contains minimal example of the testing pipeline. Evaluates given checkpoint on a testset.
 
     Args:
         config (DictConfig): Configuration composed by Hydra.
@@ -51,7 +50,8 @@ def test(config: DictConfig) -> None:
     trainer: Trainer = hydra.utils.instantiate(config.trainer, logger=logger)
 
     # Log hyperparameters
-    trainer.logger.log_hyperparams({"ckpt_path": config.ckpt_path})
+    if trainer.logger:
+        trainer.logger.log_hyperparams({"ckpt_path": config.ckpt_path})
 
     log.info("Starting testing!")
     trainer.test(model=model, datamodule=datamodule, ckpt_path=config.ckpt_path)

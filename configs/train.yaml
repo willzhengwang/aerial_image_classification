@@ -6,7 +6,7 @@ defaults:
   - datamodule: mnist.yaml
   - model: mnist.yaml
   - callbacks: default.yaml
-  - logger: tensorboard # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
+  - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
   - trainer: default.yaml
   - log_dir: default.yaml
 
@@ -50,7 +50,7 @@ train: True
 test: True
 
 # seed for random number generators in pytorch, numpy and python.random
-seed: 72
+seed: null
 
 # default name for the experiment, determines logging folder path
 # (you can overwrite this name in experiment configs)
